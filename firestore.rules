@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: check if the user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper: get the user's role from their Firestore profile
+    function getRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isAuth() && getRole() == 'admin';
+    }
+
+    function isTeacher() {
+      return isAuth() && getRole() == 'teacher';
+    }
+
+    // ─── USERS ──────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      // Any authenticated user can read their own profile
+      allow read: if isAuth() && (request.auth.uid == userId || isAdmin());
+      // Admins can read all users
+      allow list: if isAdmin();
+      // Only admins can create/update/delete user profiles
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ─── STUDENTS ───────────────────────────────────────────────────────────
+    match /students/{studentId} {
+      // Teachers can read students assigned to them
+      allow read: if isAuth() && (
+        isAdmin() ||
+        (isTeacher() && request.auth.uid in resource.data.teacherIds)
+      );
+      allow list: if isAdmin() || isTeacher();
+
+      // Teachers can create students; admins can do anything
+      allow create: if isAuth() && (isAdmin() || isTeacher());
+      allow update: if isAuth() && (isAdmin() || isTeacher());
+
+      // Only admins can delete student records
+      allow delete: if isAdmin();
+    }
+
+    // ─── TRANSACTIONS ────────────────────────────────────────────────────────
+    match /transactions/{txId} {
+      // Teachers can read transactions they created or for their students
+      allow read: if isAuth() && (
+        isAdmin() ||
+        resource.data.teacherId == request.auth.uid
+      );
+      allow list: if isAdmin() || isTeacher();
+
+      // Any authenticated teacher/admin can create a transaction
+      allow create: if isAuth() && (isAdmin() || isTeacher()) &&
+        request.resource.data.amount > 0 &&
+        request.resource.data.type in ['deposit', 'withdrawal'] &&
+        request.resource.data.teacherId == request.auth.uid;
+
+      // Transactions are IMMUTABLE — no updates or deletes allowed
+      allow update, delete: if false;
+    }
+  }
+}
