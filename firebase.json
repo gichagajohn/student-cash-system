@@ -4,6 +4,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
+    "site": "student-cash-system",
     "public": "dist",
     "ignore": [
       "firebase.json",
