@@ -3,9 +3,10 @@ import { useState } from 'react';
 import {
   LayoutDashboard, Users, ArrowLeftRight, BarChart3,
   LogOut, Menu, X, GraduationCap, UserCog, ChevronRight,
-  Banknote
+  Banknote, ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import JgMark from './JgMark';
 import toast from 'react-hot-toast';
 
 export default function Layout() {
@@ -87,6 +88,20 @@ export default function Layout() {
           <LogOut size={14} />
           Sign Out
         </button>
+        <a
+          href="https://gichagajohn.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 flex items-center gap-2 border-t border-slate-800 px-3 pt-3 text-xs text-slate-500 transition-colors hover:text-slate-300"
+          aria-label="Visit John Gichaga's portfolio, opens in a new tab"
+        >
+          <JgMark className="h-7 w-7 flex-shrink-0" />
+          <span className="min-w-0 flex-1">
+            <span className="block font-medium text-slate-400">John Gichaga</span>
+            <span className="block">Portfolio</span>
+          </span>
+          <ExternalLink size={13} aria-hidden="true" />
+        </a>
       </div>
     </div>
   );

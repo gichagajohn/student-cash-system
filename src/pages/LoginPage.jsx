@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Banknote, Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Banknote, Eye, EyeOff, ExternalLink, Lock, Mail } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import JgMark from '../components/shared/JgMark';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
@@ -51,6 +52,17 @@ export default function LoginPage() {
           </div>
           <h1 className="text-2xl font-bold">SchoolCash</h1>
           <p className="text-slate-400 text-sm mt-1">Student Cash Management System</p>
+          <a
+            href="https://gichagajohn.github.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-2 text-xs text-slate-500 transition-colors hover:text-slate-300"
+            aria-label="Visit John Gichaga's portfolio, opens in a new tab"
+          >
+            <JgMark className="h-5 w-5" />
+            <span>By John Gichaga</span>
+            <ExternalLink size={12} aria-hidden="true" />
+          </a>
         </div>
 
         <div className="card p-6">
